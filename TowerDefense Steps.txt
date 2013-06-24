@@ -1,0 +1,43 @@
+Tower Defense
+- Create Overworld Layer and Window (640x480)
+	+ Create Basic Background with Path
+- Add stock music
+- Create Non-Moving Enemy (16bit)
+	+ Create Sprite Animations
+- Move enemy in Layer(Straight then Path)
+    + Loop through Animation
+	+ Move enemy specified coordinates at fixed speed
+- Create Basic Tower
+    + Create Sprite
+	+ Create Pellet Sprite
+	+ Configure tower with Basic Speed/Instant Kill
+- Create Grid
+    + Divide overworld into equal quadrants
+- Place Basic Tower based on Mouse
+	+ Check Mouse on the selected quadrant
+	+ Check if tower already exists in quadrant
+	+ Place tower in quadrant
+- Add functionality to Tower (aka Shoot things)
+	+ Locate closest enemy
+	+ Fire animation and pellet sprite moves to enemy relative to their position
+- Collision detection between pellets and enemies
+	+ Pellet detects collision with enemy
+	+ Enemy is destroyed, dissapears from map
+- Basic Enemy/Tower Configuration (Health, Damage, Speed, etc.)
+    + Add enemy health, change enemy speed
+	+ Add tower damage, change tower fire rate
+- Lose Condition (health for end base)
+	+ Add end base
+	+ Have it so base health depends on amount of enemies let through
+- Multiples enemies same as previous.
+	+ Add multiple enemies, see how it goes.
+- Multiple towers same as previous.
+    + Add multiple towers, see how it goes.
+
+Tower Defense Resources:
+- Sprites for Moving Enemy
+- Image for Overworld
+- Sprite for shooting/static tower
+- Sprite for pellet fire
+- Background music for game
+- Sound effect for tower firing
