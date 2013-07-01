@@ -1,4 +1,5 @@
 import pygame, random
+from pygame import mixer
 pygame.init()
 
 background = pygame.image.load("images/overworld_test.png")
@@ -15,7 +16,7 @@ class Enemy(pygame.sprite.Sprite):
         self.reset()
         
     def update(self):
-        if self.rect.top < 100:
+        if self.rect.top < 200:
             self.rect.centerx += 0
             self.rect.centery += 1
         if self.rect.top >= 100 and self.rect.left > 100:
@@ -27,11 +28,12 @@ class Enemy(pygame.sprite.Sprite):
 
     def reset(self):
         self.rect.bottom = 0
-        self.rect.centerx = 350
-        self.dy = random.randrange(5, 10)
-        self.dx = random.randrange(-2, 2)
+        self.rect.centerx = 450
         
 def main():
+    mixer.init(44100)
+    music = mixer.Sound("sounds/test.wav")
+    music.play(loops=-1)
     pygame.display.set_caption("Simple Tower Enemy")
 
     screen.blit(background, bRect)

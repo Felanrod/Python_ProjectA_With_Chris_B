@@ -33,6 +33,7 @@ Tower Defense
 	+ Add multiple enemies, see how it goes.
 - Multiple towers same as previous.
     + Add multiple towers, see how it goes.
+- Create Menu
 
 Tower Defense Resources:
 - Sprites for Moving Enemy
