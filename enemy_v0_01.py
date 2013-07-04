@@ -2,33 +2,39 @@ import pygame, random
 from pygame import mixer
 pygame.init()
 
-background = pygame.image.load("images/overworld_test.png")
+background = pygame.image.load("images/overworld_1.png")
 bRect = background.get_rect()
 size = (width, height) = background.get_size()
 screen = pygame.display.set_mode(size)
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, xPos):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("images/enemy.png")
         self.image = self.image.convert()
+        transColor = self.image.get_at((1, 1))
+        self.image.set_colorkey(transColor)
         self.rect = self.image.get_rect()
-        self.reset()
+        self.rect.centerx = xPos
+        self.rect.centery = 90
         
     def update(self):
-        if self.rect.top < 200:
-            self.rect.centerx += 0
-            self.rect.centery += 1
-        if self.rect.top >= 100 and self.rect.left > 100:
-            self.rect.centerx -= 1
-        if self.rect.top >= 100 and self.rect.left <= 100:
-            self.rect.centery += 1
-        if self.rect.top > screen.get_height():
+        xRoad = 300
+        yRoad = 290
+        if self.rect.centerx < xRoad:
+            self.rect.centerx += 1.5
+            self.rect.centery += 0
+        if self.rect.centerx >= xRoad and self.rect.centery < yRoad:
+            self.rect.centery += 1.5
+        if self.rect.centerx >= xRoad and self.rect.centery >= yRoad:
+            self.rect.centerx += 1.5
+        if self.rect.centerx > (screen.get_width() - 40):
             self.reset()
 
     def reset(self):
         self.rect.bottom = 0
-        self.rect.centerx = 450
+        self.rect.centery = 90
+        self.rect.centerx = 0
         
 def main():
     mixer.init(44100)
@@ -37,9 +43,13 @@ def main():
     pygame.display.set_caption("Simple Tower Enemy")
 
     screen.blit(background, bRect)
-    enemy = Enemy()
+    enemies = []
+
+    for index in range(1, 10):
+        enemy = Enemy((index*(-100)))
+        enemies.append(enemy)
     
-    allSprites = pygame.sprite.Group(enemy)
+    allSprites = pygame.sprite.Group(enemies)
     clock = pygame.time.Clock()
 
     keepGoing = True
