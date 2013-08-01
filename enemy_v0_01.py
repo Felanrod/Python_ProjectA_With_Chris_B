@@ -39,7 +39,7 @@ class Enemy(pygame.sprite.Sprite):
 def main():
     mixer.init(44100)
     music = mixer.Sound("sounds/test.wav")
-    music.play(loops=-1)
+    #music.play(loops=-1)
     pygame.display.set_caption("Simple Tower Enemy")
 
     screen.blit(background, bRect)
