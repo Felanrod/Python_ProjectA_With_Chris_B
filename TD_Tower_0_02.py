@@ -28,8 +28,9 @@ class Label(pygame.sprite.Sprite):
 
 
 class Turret(pygame.sprite.Sprite):
-    def __init__(self, shell):
+    def __init__(self, shell, enemy):
         self.shell = shell
+        self.enemy = enemy
         pygame.sprite.Sprite.__init__(self)
         self.imageMaster = pygame.image.load("images/turret.gif")
         self.imageMaster = self.imageMaster.convert()
@@ -38,7 +39,7 @@ class Turret(pygame.sprite.Sprite):
         self.rect.center = (320, 240)
         self.dir = 0
         self.distance = 0
-        self.charge = 5
+        self.charge = 10
 
     def update(self):
         self.findEnemy()
@@ -66,22 +67,42 @@ class Turret(pygame.sprite.Sprite):
         #calculate distance
         self.distance = math.sqrt((dx * dx) + (dy * dy))
 
+    def checkEnemy(self):
+        dx = self.rect.centerx - self.enemy.rect.centerx
+        dy = self.rect.centery - self.enemy.rect.centery
+        self.distance = math.sqrt((dx * dx) + (dy * dy))
+        xMov, yMov = 0,0
+
+        if self.enemy.dir == 'Right':
+            dx -= (10*self.enemy.moveSpeed + self.distance/5)
+        elif self.enemy.dir == 'Left':
+            dx += (10*self.enemy.moveSpeed + self.distance/5)
+        elif self.enemy.dir == 'Up':
+            dy += (10*self.enemy.moveSpeed + self.distance/5)
+        elif self.enemy.dir == 'Down':
+            dy -= (10*self.enemy.moveSpeed + self.distance/5)
+
+        return dx, dy
+
     def findEnemy(self):
-        dx = self.rect.centerx - self.shell.rect.centerx
-        dy = self.rect.centery - self.shell.rect.centery
+##        dx = self.rect.centerx - self.enemy.rect.centerx
+##        dy = self.rect.centery - self.enemy.rect.centery
+##        self.distance = math.sqrt((dx * dx) + (dy * dy))
+
+        dx, dy = self.checkEnemy()            
         dy *= -1
 
         radians = math.atan2(dy, dx)
         self.dir = radians * 180 / math.pi
         self.dir += 180
-    
+        
     def rotate(self):
         oldCenter = self.rect.center
         self.image = pygame.transform.rotate(self.imageMaster, self.dir)
         self.rect = self.image.get_rect()
         self.rect.center = oldCenter
 
-class Shell(pygame.sprite.Sprite):
+class Shell(pygame.sprite.Sprite):    
     def __init__(self, screen):
         pygame.sprite.Sprite.__init__(self)
         self.screen = screen
@@ -97,6 +118,7 @@ class Shell(pygame.sprite.Sprite):
         self.speed = 0
         self.dir =0
         self.reset()
+        
         
     def update(self):
         self.calcVector()
@@ -117,6 +139,7 @@ class Shell(pygame.sprite.Sprite):
         
     
     def checkBounds(self):
+        global misses
         screen = self.screen
         if self.x > screen.get_width():
             self.reset()
@@ -142,8 +165,9 @@ class LblDist(Label):
     
     def update(self):
         Label.update(self)
-        self.text = "angle: %d, dist: %d px" % \
-        (self.turret.dir, self.turret.distance)
+        hitmiss = hits / misses * 100
+        self.text = "angle: %d, dist: %d px, hit/miss %d%%" % \
+        (self.turret.dir, self.turret.distance, hitmiss)
 
 class EnemyTest(pygame.sprite.Sprite):
     def __init__(self):
@@ -153,28 +177,33 @@ class EnemyTest(pygame.sprite.Sprite):
         transColor = self.image.get_at((1, 1))
         self.image.set_colorkey(transColor)
         self.rect = self.image.get_rect()
-        self.rect.centerx = 200
+        self.rect.centerx = 50
         self.rect.centery = 100
+        self.moveSpeed = 5
+        self.dir = 'Right'
         self.moveFwd = True
 
-    def getXP(self):
-        return self.rect.centerx
-
-    def getYP(self):
-        return self.rect.centery
-
     def update(self):
-        if self.rect.centerx >= 200:
-            if self.rect.centerx <= 400 and self.moveFwd:
-                self.rect.centerx += 2
+        if self.rect.centerx >= 50:
+            if self.rect.centerx <= 550 and self.dir == 'Right':
+                self.rect.centerx += self.moveSpeed
             else:
-                self.rect.centerx -= 2
-                self.moveFwd = False
+                if self.rect.centery >= 100 and self.dir != 'Up' and self.dir !='Left':
+                    if self.rect.centery <= 450:
+                        self.rect.centery += self.moveSpeed
+                        self.dir = 'Down'
+                    else:            
+                        self.rect.centery = 450
+                        self.dir = 'Up'
+                elif self.rect.centery > 100 and self.dir == 'Up':
+                    self.rect.centery -= self.moveSpeed
+                else:
+                    self.rect.centery = 100
+                    self.rect.centerx -= self.moveSpeed
+                    self.dir = 'Left'
         else:
-            self.rect.centerx = 200
-            self.moveFwd = True
-
-        print self.rect.centerx
+            self.rect.centerx = 50
+            self.dir = 'Right'
         
 
 def main():
@@ -186,10 +215,15 @@ def main():
     screen.blit(background, (0, 0))
 
     shell = Shell(screen)
-    turret = Turret(shell)
+    shell2 = Shell(screen)
     enemy = EnemyTest()
+    turret = Turret(shell, enemy)
+    turret2 = Turret(shell2, enemy)
+
+    turret2.rect.center = (200, 200)
+    
     lblDist = LblDist(turret)
-    allSprites = pygame.sprite.Group(shell, turret, enemy, lblDist)
+    allSprites = pygame.sprite.Group(shell, shell2, turret, turret2, enemy, lblDist)
     
     clock = pygame.time.Clock()
     keepGoing = True
@@ -202,6 +236,9 @@ def main():
         if shell.rect.colliderect(enemy.rect):
             print "Hit!"
             shell.reset()
+        if shell2.rect.colliderect(enemy.rect):
+            print "Hit!"
+            shell2.reset()
         
         
         allSprites.clear(screen, background)
