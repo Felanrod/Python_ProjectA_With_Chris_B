@@ -547,7 +547,7 @@ def intro(score):
     "",
     "Instructions: You are a tank commander",
     "stop the rebels before the bomb HQ!",
-    "",
+    "",sws
     "Shoot, run over powerups,",
     "avoid incomming enemies.",
     "Shoot enemies with <SPACEBAR>.",
