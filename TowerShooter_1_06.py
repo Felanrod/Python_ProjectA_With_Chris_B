@@ -370,7 +370,7 @@ class Enemy(pygame.sprite.Sprite):
 class EnemyVehicle(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("images/enemyV.png")
+        self.image = pygame.image.load("images/enemyVehicle.png")
         self.image = self.image.convert()
         transColor = self.image.get_at((1, 1))
         self.image.set_colorkey(transColor)
